@@ -7,6 +7,7 @@ command line               [1]           [2]            [3]               [4]   
   WriteDllTester_edcb.exe  "input_path"  "save_folder"  "save_foldersub"  limit_MiBsec  dllname  overwrite
 
 
+デバッグ  -->  引数
 　args[1]              [2]              [3]                 [4]           [5]                [6]
   "input_file"         "output_folder"  "output_foldersub"  limit_MiBsec  dll_name           overwrite
   "D:\input.ts"        "D:\\"           "E:\\"              0             Write_Default.dll  1
@@ -14,7 +15,9 @@ command line               [1]           [2]            [3]               [4]   
   "E:\TS_Samp\t2s.ts"  "E:\pf_out"      "D:"                20.0          Write_PF.dll       1
 
 
-  ・フォルダ名最後の\は\\にする。\だけだと特殊文字\"になる。
+  ・出力フォルダが存在しないと作成される。
+  ・フォルダ名の最後に\はつけなくてもいい。
+  ・c++  最後に\をつける場合は\\にする。\だけだと特殊文字 \"と認識される。
   ・引数間に全角スペースがあるとダメ
 */
 
@@ -104,11 +107,11 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[])
   }
 
   //show setting
+  wcerr << fixed << setprecision(1);       //小数点１桁まで表示
   wcerr << endl;
   wcerr << L"  input_file     : " << input_file << endl;
   wcerr << L"  save_folder    : " << save_folder << endl;
   wcerr << L"  save_foldersub : " << save_foldersub << endl;
-  wcerr << fixed << setprecision(1);       //小数点１桁まで表示
   wcerr << L"  limit MiB/sec  : " << limit_MiB << endl;
   wcerr << L"  dllname        : " << dllname << endl;
   wcerr << L"  overwrite      : " << overwrite << endl;
@@ -288,7 +291,7 @@ void ReadSpeed_CrackDown(double limit, __int64 read)
   tickReadSize += read;
 
   auto tickElapse = system_clock::now() - tickBeginTime;
-  auto elapse_ms = duration_cast<chrono::milliseconds>(tickElapse).count();
+  auto elapse_ms = duration_cast<milliseconds>(tickElapse).count();
 
   //200msごとにカウンタリセット
   if (200 <= elapse_ms)
@@ -299,7 +302,7 @@ void ReadSpeed_CrackDown(double limit, __int64 read)
 
   //読込量が制限をこえたらsleep_for
   if (limit * (200.0 / 1000.0) < tickReadSize)
-    this_thread::sleep_for(chrono::milliseconds(200 - elapse_ms));
+    this_thread::sleep_for(milliseconds(200 - elapse_ms));
 
 }
 
